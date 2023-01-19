@@ -17,6 +17,7 @@ local M = {}
 local base_dirs
 local hidden_files
 local order_by
+local s_on_project_selected
 
 -- Allow user to set base_dirs
 local theme_opts = {}
@@ -35,6 +36,10 @@ M.setup = function(setup_config)
 	search_by = setup_config.search_by or "title"
 	sync_with_nvim_tree = setup_config.sync_with_nvim_tree or false
 	_git.update_git_repos(base_dirs)
+	s_on_project_selected = setup_config.on_project_selected
+		or function(prompt_bufnr, hidden_files)
+			_actions.find_project_files(prompt_bufnr, hidden_files)
+		end
 end
 
 -- This creates a picker with a list of all of the projects
@@ -83,11 +88,7 @@ M.project = function(opts)
 				map("i", "<c-w>", _actions.change_workspace)
 
 				local on_project_selected = function()
-					if setup_config.on_project_selected then
-						setup_config.on_project_selected(prompt_bufnr, hidden_files)
-					else
-						_actions.find_project_files(prompt_bufnr, hidden_files)
-					end
+					s_on_project_selected(prompt_bufnr, hidden_files)
 				end
 
 				actions.select_default:replace(on_project_selected)
