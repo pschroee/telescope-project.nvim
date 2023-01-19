@@ -83,9 +83,13 @@ M.project = function(opts)
 				map("i", "<c-w>", _actions.change_workspace)
 
 				local on_project_selected = function()
-					_actions.change_working_directory(prompt_bufnr)
-					-- _actions.find_project_files(prompt_bufnr, hidden_files)
+					if setup_config.on_project_selected then
+						setup_config.on_project_selected(prompt_bufnr, hidden_files)
+					else
+						_actions.find_project_files(prompt_bufnr, hidden_files)
+					end
 				end
+
 				actions.select_default:replace(on_project_selected)
 				return true
 			end,
